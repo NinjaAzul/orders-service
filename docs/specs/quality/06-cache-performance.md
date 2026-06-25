@@ -239,7 +239,7 @@ createOrder request
 
 Padrões completos de logs, traces, spans e correlação serão definidos em spec própria:
 
-- `docs/specs/09-observability-logs-traces.md`
+- `docs/specs/quality/09-observability-logs-traces.md`
 
 ## Melhorias Futuras
 

@@ -214,7 +214,7 @@ Decisão:
 
 Padrões de criação de logs, traces e spans serão detalhados em spec própria:
 
-- `docs/specs/09-observability-logs-traces.md`
+- `docs/specs/quality/09-observability-logs-traces.md`
 
 ### Erros Customizados
 

@@ -1,4 +1,4 @@
-# 12 - README e Entrega
+# 13 - README e Entrega
 
 ## Objetivo
 
@@ -67,7 +67,7 @@ O README deve explicar em poucas linhas:
 
 Referenciar a spec:
 
-- `docs/specs/01-system-design.md`
+- `docs/specs/foundation/01-system-design.md`
 
 Pontos a citar:
 
@@ -81,7 +81,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/02-backend-tooling.md`
+- `docs/specs/foundation/02-backend-tooling.md`
 
 Pontos a citar:
 
@@ -142,7 +142,7 @@ Observação:
 
 Referenciar a spec:
 
-- `docs/specs/04-api-graphql.md`
+- `docs/specs/foundation/04-api-graphql.md`
 
 Pontos a citar:
 
@@ -156,7 +156,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/03-modelagem-dados.md`
+- `docs/specs/foundation/03-modelagem-dados.md`
 
 Pontos a citar:
 
@@ -171,7 +171,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/05-regras-negocio-transacoes.md`
+- `docs/specs/foundation/05-regras-negocio-transacoes.md`
 
 Pontos a citar:
 
@@ -185,7 +185,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/06-cache-performance.md`
+- `docs/specs/quality/06-cache-performance.md`
 
 Pontos a citar:
 
@@ -200,7 +200,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/09-observability-logs-traces.md`
+- `docs/specs/quality/09-observability-logs-traces.md`
 
 Pontos a citar:
 
@@ -218,7 +218,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/07-estrategia-testes.md`
+- `docs/specs/quality/07-estrategia-testes.md`
 
 Comandos esperados:
 
@@ -238,7 +238,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/08-load-testing-stack.md`
+- `docs/specs/quality/08-load-testing-stack.md`
 
 Comando esperado:
 
@@ -258,7 +258,7 @@ Pontos a citar:
 
 Referenciar a spec:
 
-- `docs/specs/10-code-quality-standards.md`
+- `docs/specs/quality/10-code-quality-standards.md`
 
 Comandos esperados:
 
@@ -278,32 +278,144 @@ Pontos a citar:
 - lint, formatação e testes no pre-push;
 - bloqueio de `any`, variáveis não usadas e formatação inconsistente.
 
+## CI/CD
+
+Referenciar a spec:
+
+- `docs/specs/quality/11-ci-cd-github-actions.md`
+
+Pontos a citar:
+
+- GitHub Actions como pipeline de validação;
+- workflow em pull requests e pushes para `main` e `develop`;
+- uso de `npm ci` para instalação reproduzível;
+- execução de lint, format check, testes e build;
+- PostgreSQL e Redis como services descartáveis para testes;
+- `.env` real não deve ser usado no CI;
+- secrets devem ficar no GitHub Secrets.
+
+## Commits
+
+Referenciar o guia:
+
+- `docs/agent-guides/commit-message-standard.md`
+
+Pontos a citar:
+
+- commits devem ser feitos conforme specs ou etapas forem concluídas;
+- usar ticket quando houver;
+- usar tipo em maiúsculas;
+- manter descrição curta em português;
+- não misturar assuntos diferentes no mesmo commit.
+
+Formato:
+
+```txt
+[TICKET-123] - TYPE - descrição curta no imperativo
+TYPE - descrição curta no imperativo
+```
+
+Tipos:
+
+- `FEAT`
+- `FIX`
+- `REFACTOR`
+- `HOTFIX`
+- `DOCS`
+- `CHORE`
+
 ## Project Agent Skills
 
 Referenciar a spec:
 
-- `docs/specs/11-project-agent-skills.md`
+- `docs/specs/process/12-project-agent-skills.md`
+
+Organização das specs:
+
+- `docs/specs/00-index.md`
+- `docs/specs/foundation/`
+- `docs/specs/quality/`
+- `docs/specs/process/`
+- `docs/specs/features/`
+- `docs/specs/archive/`
+
+Entry points:
+
+- `AGENTS.md`
 
 Guias agnósticos:
 
+- `docs/agent-guides/README.md`
 - `docs/agent-guides/mcp-docs-gate.md`
 - `docs/agent-guides/order-service-spec-driven.md`
 - `docs/agent-guides/code-quality-gate.md`
+- `docs/agent-guides/spec-workflow.md`
+- `docs/agent-guides/generate-pr-description.md`
+- `docs/agent-guides/commit-message-standard.md`
+
+Templates de adaptadores:
+
+- `docs/agent-adapters/README.md`
+- `docs/agent-adapters/templates/`
+
+Comando de geração local:
+
+```bash
+scripts/setup-agent-adapters.sh
+```
+
+Entrada das specs:
+
+- `docs/specs/00-index.md`
+
+Memory temporária:
+
+- `docs/memory/README.md`
+- `docs/memory/decisions.md`
+- `docs/memory/implementation-notes.md`
+- `docs/memory/open-questions.md`
 
 Adaptadores Cursor:
 
 - `mcp-docs-gate`
 - `order-service-spec-driven`
 - `code-quality-gate`
+- `generate-pr-description`
+- `commit-message-standard`
+
+Adaptadores Claude Code:
+
+- `CLAUDE.md`
+- `.claude/README.md`
+
+Rules Cursor:
+
+- `.cursor/rules/spec-driven-workflow.mdc`
+- `.cursor/rules/mcp-docs-gate.mdc`
 
 Pontos a citar:
 
+- `AGENTS.md` é o entry point universal para agentes;
+- `CLAUDE.md` é gerado localmente para Claude Code;
 - guias agnósticos ficam em `docs/agent-guides`;
-- adaptadores do Cursor ficam em `.cursor/skills`;
+- templates ficam em `docs/agent-adapters/templates`;
+- adaptadores do Cursor são gerados em `.cursor/skills`;
+- adaptadores do Claude são gerados em `.claude`;
+- rules do Cursor são geradas em `.cursor/rules`;
+- adaptadores gerados são ignorados pelo Git;
+- Cursor usa skills formais como ponte para os guias agnósticos;
+- Claude Code usa `CLAUDE.md` e `.claude/README.md` como entry points para os mesmos guias;
 - outros agentes, como Claude Code, devem ler os guias agnósticos;
+- agentes devem começar por `docs/specs/00-index.md`;
+- specs de fundação, qualidade e processo são permanentes;
+- specs em `features/` são temporárias durante desenvolvimento;
+- specs concluídas podem ser promovidas, arquivadas ou apagadas;
+- `docs/memory` guarda apenas notas temporárias;
 - `mcp-docs-gate` obriga consulta MCP/Context7 quando documentação atual é necessária;
 - `order-service-spec-driven` guia implementação a partir das specs locais;
-- `code-quality-gate` reforça lint, formatação, hooks e testes antes de finalizar mudanças.
+- `code-quality-gate` reforça lint, formatação, hooks e testes antes de finalizar mudanças;
+- `generate-pr-description` gera descrição de PR em português usando Jira, branch atual e commits reais da branch;
+- `commit-message-standard` padroniza mensagens de commit com ticket opcional, tipo e descrição curta.
 
 ## Decisões Técnicas
 
@@ -318,8 +430,10 @@ Decisões para destacar:
 - OpenTelemetry para traces.
 - Grafana, Tempo e Loki para observabilidade local.
 - ESLint, Prettier, Husky e lint-staged para padronização.
+- `AGENTS.md` como entry point universal para agentes.
 - Guias agnósticos de agente para reforçar padrões do projeto.
-- Adaptadores Cursor apenas como ponte para os guias compartilháveis.
+- Templates de adaptadores por IDE versionados.
+- Adaptadores por IDE gerados localmente no setup.
 - Clean Architecture para separar regras e infraestrutura.
 
 ## Trade-offs
@@ -333,6 +447,7 @@ Trade-offs para explicar:
 - Logger padrão é suficiente no MVP, mas logs estruturados com Pino seriam melhores em produção.
 - Hooks locais aumentam a disciplina de qualidade, mas podem tornar commits e pushes um pouco mais lentos.
 - Guias de agente ajudam consistência entre IDEs, mas precisam ser mantidos junto com as specs.
+- Templates de adaptadores adicionam arquivos ao repositório, mas os adaptadores gerados ficam locais e evitam duplicar conhecimento em cada ferramenta.
 - Offset pagination é simples, mas cursor pagination escala melhor para grandes volumes.
 
 ## O Que Faria Diferente Com Mais Tempo

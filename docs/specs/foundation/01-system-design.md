@@ -134,7 +134,7 @@ A observabilidade não deve fazer parte do caminho crítico de criação de pedi
 
 Padrões de logs, traces, spans e correlação serão definidos em spec própria:
 
-- `docs/specs/09-observability-logs-traces.md`
+- `docs/specs/quality/09-observability-logs-traces.md`
 
 ## Visão dos Containers
 

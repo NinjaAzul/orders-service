@@ -10,7 +10,7 @@ Este guia é agnóstico à IDE e pode ser usado por Cursor, Claude Code ou qualq
 
 Seguir:
 
-- `docs/specs/10-code-quality-standards.md`
+- `docs/specs/quality/10-code-quality-standards.md`
 
 ## Checks Obrigatórios
 

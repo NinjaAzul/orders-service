@@ -8,29 +8,36 @@ Este guia é agnóstico à IDE e pode ser usado por Cursor, Claude Code ou qualq
 
 ## Fonte de Verdade
 
-Antes de implementar, leia somente as specs relevantes:
+Antes de implementar, leia primeiro:
 
-- `docs/specs/01-system-design.md`
-- `docs/specs/02-backend-tooling.md`
-- `docs/specs/03-modelagem-dados.md`
-- `docs/specs/04-api-graphql.md`
-- `docs/specs/05-regras-negocio-transacoes.md`
-- `docs/specs/06-cache-performance.md`
-- `docs/specs/07-estrategia-testes.md`
-- `docs/specs/08-load-testing-stack.md`
-- `docs/specs/09-observability-logs-traces.md`
-- `docs/specs/10-code-quality-standards.md`
-- `docs/specs/11-project-agent-skills.md`
-- `docs/specs/12-readme-entrega.md`
+- `docs/specs/00-index.md`
+- `docs/agent-guides/spec-workflow.md`
+
+Depois, leia somente as specs relevantes:
+
+- `docs/specs/foundation/01-system-design.md`
+- `docs/specs/foundation/02-backend-tooling.md`
+- `docs/specs/foundation/03-modelagem-dados.md`
+- `docs/specs/foundation/04-api-graphql.md`
+- `docs/specs/foundation/05-regras-negocio-transacoes.md`
+- `docs/specs/quality/06-cache-performance.md`
+- `docs/specs/quality/07-estrategia-testes.md`
+- `docs/specs/quality/08-load-testing-stack.md`
+- `docs/specs/quality/09-observability-logs-traces.md`
+- `docs/specs/quality/10-code-quality-standards.md`
+- `docs/specs/process/12-project-agent-skills.md`
+- `docs/specs/process/13-readme-entrega.md`
 
 ## Workflow
 
-1. Identificar qual spec controla a mudança.
-2. Ler só as seções relevantes.
-3. Implementar seguindo a decisão existente.
-4. Se surgir decisão nova, atualizar a spec antes do código.
-5. Rodar validações aplicáveis.
-6. Atualizar README apenas no final.
+1. Ler `docs/specs/00-index.md`.
+2. Selecionar de 2 a 4 specs relevantes.
+3. Ler só as seções necessárias.
+4. Implementar seguindo a decisão existente.
+5. Se surgir decisão nova, registrar em `docs/memory/decisions.md`.
+6. Promover decisão estável para a spec responsável.
+7. Rodar validações aplicáveis.
+8. Atualizar README apenas no final.
 
 ## Guardrails
 

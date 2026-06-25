@@ -1,0 +1,14 @@
+---
+description: Spec-driven workflow for this project
+alwaysApply: true
+---
+
+# Spec Driven Workflow
+
+- Read `docs/specs/00-index.md` before planning or implementing.
+- Use `docs/agent-guides/spec-workflow.md` to choose only relevant specs.
+- Treat specs as source of truth.
+- Treat `docs/memory` as temporary notes only.
+- If a decision becomes stable, promote it from memory to the responsible spec.
+- Do not load all specs by default; select 2 to 4 relevant specs.
+- Keep `docs/specs/process/13-readme-entrega.md` for final delivery documentation.

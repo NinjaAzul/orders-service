@@ -1,0 +1,85 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Package manager caches
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Test and tooling cache
+.jest/
+.eslintcache
+.cache/
+.tsbuildinfo
+*.tsbuildinfo
+
+# Docker local data
+docker-data/
+.docker/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE local settings
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+# Generated local IDE adapters
+CLAUDE.md
+.claude/
+.cursor/
+
+# Agent guidance intentionally versioned
+!AGENTS.md
+!docs/agent-guides/
+!docs/agent-guides/**
+!docs/agent-adapters/
+!docs/agent-adapters/**
+!scripts/setup-agent-adapters.sh
+
+# Local generated artifacts
+load-tests/results/
+k6-results/
+
+# Secrets and credentials
+*.pem
+*.key
+*.crt
+credentials.json
+secrets.json

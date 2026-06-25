@@ -1,0 +1,13 @@
+---
+description: Require current docs for library and tooling tasks
+alwaysApply: true
+---
+
+# MCP Docs Gate
+
+- Follow `docs/agent-guides/mcp-docs-gate.md` for docs-sensitive tasks.
+- Use MCP/Context7 before implementing or configuring external libraries.
+- Read MCP tool schema before calling MCP tools.
+- Stop and report if required docs tooling is unavailable.
+- Do not continue from memory for docs-sensitive work unless the user explicitly asks.
+- Keep documentation queries focused to reduce token usage.
