@@ -1,6 +1,7 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
+COPY scripts/prepare-husky.js ./scripts/prepare-husky.js
 RUN npm ci
 
 FROM node:22-alpine AS build
@@ -13,6 +14,7 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package*.json ./
+COPY scripts/prepare-husky.js ./scripts/prepare-husky.js
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
 EXPOSE 3000
