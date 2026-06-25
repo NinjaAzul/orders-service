@@ -80,12 +80,12 @@ Extraia:
 
 Mapeie o tipo Jira:
 
-| Jira | PR |
-| --- | --- |
-| Story / Epic / New Feature | Feature |
-| Bug | Bug |
-| Task / Sub-task sem feature | Chore |
-| Refactor / Technical debt | Refactor |
+| Jira                        | PR       |
+| --------------------------- | -------- |
+| Story / Epic / New Feature  | Feature  |
+| Bug                         | Bug      |
+| Task / Sub-task sem feature | Chore    |
+| Refactor / Technical debt   | Refactor |
 
 ## 3. Analisar Apenas Commits da Branch
 
@@ -113,12 +113,12 @@ Regras:
 
 Inferir produto pelos paths alterados:
 
-| Path | Produto |
-| --- | --- |
-| `layers/do/` | D&O |
-| `layers/rural/` | Rural |
-| `layers/vida/` | Vida |
-| `layers/admin/` | Admin |
+| Path            | Produto |
+| --------------- | ------- |
+| `layers/do/`    | D&O     |
+| `layers/rural/` | Rural   |
+| `layers/vida/`  | Vida    |
+| `layers/admin/` | Admin   |
 
 Se houver múltiplas layers, listar todas.
 
@@ -133,12 +133,12 @@ Template:
 ```markdown
 # <Título resumido>
 
-| Campo | Valor |
-|---|---|
-| **Issue** | [<ID>](https://fairfaxbrasil.atlassian.net/browse/<ID>) |
-| **Tipo** | <Feature / Bug / Chore / Refactor> |
-| **Produto** | <ex: D&O, Rural, Vida> |
-| **Branch** | `<nome-da-branch>` |
+| Campo       | Valor                                                   |
+| ----------- | ------------------------------------------------------- |
+| **Issue**   | [<ID>](https://fairfaxbrasil.atlassian.net/browse/<ID>) |
+| **Tipo**    | <Feature / Bug / Chore / Refactor>                      |
+| **Produto** | <ex: D&O, Rural, Vida>                                  |
+| **Branch**  | `<nome-da-branch>`                                      |
 
 ---
 
@@ -151,9 +151,11 @@ Template:
 ## O que foi feito
 
 ### <Grupo 1>
+
 - **`NomeDoArquivoOuComposable`** — <descrição em uma linha do que mudou e por quê>
 
 ### <Grupo 2>
+
 - ...
 
 ---

@@ -81,5 +81,6 @@ k6-results/
 *.pem
 *.key
 *.crt
+*.env
 credentials.json
 secrets.json

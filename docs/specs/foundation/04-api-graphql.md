@@ -172,12 +172,7 @@ mutation {
     input: {
       userId: "1"
       idempotencyKey: "order-request-123"
-      items: [
-        {
-          productId: "1"
-          quantity: 2
-        }
-      ]
+      items: [{ productId: "1", quantity: 2 }]
     }
   ) {
     id

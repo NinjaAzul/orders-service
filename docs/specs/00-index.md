@@ -8,31 +8,31 @@ Este arquivo reduz custo de contexto: leia primeiro o índice, depois abra apena
 
 ## Ordem das Specs
 
-| Spec | Quando ler |
-| --- | --- |
-| `foundation/01-system-design.md` | Arquitetura Docker, componentes de infraestrutura, rede, volumes e observabilidade no Compose. |
-| `foundation/02-backend-tooling.md` | Stack backend, NestJS, Kysely, Zod, Redis, OpenTelemetry e estrutura de pastas. |
-| `foundation/03-modelagem-dados.md` | Tabelas, campos, constraints, índices, status de pedido e idempotência. |
-| `foundation/04-api-graphql.md` | Types, queries, mutations, inputs, paginação e erros GraphQL. |
-| `foundation/05-regras-negocio-transacoes.md` | Regras permanentes de usuário, produto, pedido, estoque, transações e idempotência. |
-| `quality/06-cache-performance.md` | Redis, cache, paginação, índices, N+1, pool e performance. |
-| `quality/07-estrategia-testes.md` | Testes unitários, integração, e2e, cache e concorrência. |
-| `quality/08-load-testing-stack.md` | k6, scripts de carga, cenários, métricas e thresholds. |
-| `quality/09-observability-logs-traces.md` | Logs, traces, spans, correlation id, Tempo, Loki e Grafana. |
-| `quality/10-code-quality-standards.md` | ESLint, Prettier, TypeScript strict, Husky, lint-staged e quality gates. |
-| `quality/11-ci-cd-github-actions.md` | Workflow GitHub Actions, lint, format check, testes, build e serviços de CI. |
-| `process/12-project-agent-skills.md` | Guias agnósticos, adaptadores Cursor, MCP/Context7 e política de agentes. |
-| `process/13-readme-entrega.md` | Estrutura final do README e pontos de comunicação da entrega. |
+| Spec                                         | Quando ler                                                                                     |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `foundation/01-system-design.md`             | Arquitetura Docker, componentes de infraestrutura, rede, volumes e observabilidade no Compose. |
+| `foundation/02-backend-tooling.md`           | Stack backend, NestJS, Kysely, Zod, Redis, OpenTelemetry e estrutura de pastas.                |
+| `foundation/03-modelagem-dados.md`           | Tabelas, campos, constraints, índices, status de pedido e idempotência.                        |
+| `foundation/04-api-graphql.md`               | Types, queries, mutations, inputs, paginação e erros GraphQL.                                  |
+| `foundation/05-regras-negocio-transacoes.md` | Regras permanentes de usuário, produto, pedido, estoque, transações e idempotência.            |
+| `quality/06-cache-performance.md`            | Redis, cache, paginação, índices, N+1, pool e performance.                                     |
+| `quality/07-estrategia-testes.md`            | Testes unitários, integração, e2e, cache e concorrência.                                       |
+| `quality/08-load-testing-stack.md`           | k6, scripts de carga, cenários, métricas e thresholds.                                         |
+| `quality/09-observability-logs-traces.md`    | Logs, traces, spans, correlation id, Tempo, Loki e Grafana.                                    |
+| `quality/10-code-quality-standards.md`       | ESLint, Prettier, TypeScript strict, Husky, lint-staged e quality gates.                       |
+| `quality/11-ci-cd-github-actions.md`         | Workflow GitHub Actions, lint, format check, testes, build e serviços de CI.                   |
+| `process/12-project-agent-skills.md`         | Guias agnósticos, adaptadores Cursor, MCP/Context7 e política de agentes.                      |
+| `process/13-readme-entrega.md`               | Estrutura final do README e pontos de comunicação da entrega.                                  |
 
 ## Pastas
 
-| Pasta | Uso |
-| --- | --- |
-| `foundation/` | Decisões permanentes que definem a base do projeto. |
-| `quality/` | Padrões permanentes de qualidade, testes, performance e observabilidade. |
-| `process/` | Processo, agentes, guias e documentação final. |
-| `features/` | Specs temporárias de features durante desenvolvimento. |
-| `archive/` | Histórico de specs substituídas ou encerradas. |
+| Pasta         | Uso                                                                      |
+| ------------- | ------------------------------------------------------------------------ |
+| `foundation/` | Decisões permanentes que definem a base do projeto.                      |
+| `quality/`    | Padrões permanentes de qualidade, testes, performance e observabilidade. |
+| `process/`    | Processo, agentes, guias e documentação final.                           |
+| `features/`   | Specs temporárias de features durante desenvolvimento.                   |
+| `archive/`    | Histórico de specs substituídas ou encerradas.                           |
 
 ## Mapa Por Tipo de Trabalho
 
