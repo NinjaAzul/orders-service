@@ -42,15 +42,16 @@ A stack de carga deve responder perguntas como:
 ## Estrutura de Pastas
 
 ```txt
-load-tests/
-  scripts/
-    list-products.js
-    create-order.js
-    concurrent-orders.js
-  fixtures/
-    products.json
-    users.json
-  README.md
+test/
+  load/
+    scripts/
+      list-products.js
+      create-order.js
+      concurrent-orders.js
+    fixtures/
+      products.json
+      users.json
+    README.md
 ```
 
 ## Execução
@@ -58,19 +59,19 @@ load-tests/
 Execução local com k6 instalado:
 
 ```bash
-k6 run load-tests/scripts/list-products.js
+k6 run test/load/scripts/list-products.js
 ```
 
 Execução via Docker:
 
 ```bash
-docker run --rm -i grafana/k6 run - < load-tests/scripts/list-products.js
+docker run --rm -i grafana/k6 run - < test/load/scripts/list-products.js
 ```
 
 Execução apontando para a API local:
 
 ```bash
-BASE_URL=http://localhost:3000/graphql k6 run load-tests/scripts/list-products.js
+BASE_URL=http://localhost:3000/graphql k6 run test/load/scripts/list-products.js
 ```
 
 ## Cenários Mínimos
@@ -228,7 +229,7 @@ Esses pontos podem entrar como melhoria futura.
 ## Decisões
 
 - Usar k6 como ferramenta de carga.
-- Manter scripts em pasta separada `load-tests`.
+- Manter scripts em `test/load` para centralizar testes unitários, e2e e carga.
 - Testar leitura, escrita e concorrência.
 - Usar thresholds como critério inicial de qualidade.
 - Rodar carga separadamente dos testes Jest.

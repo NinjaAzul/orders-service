@@ -34,6 +34,12 @@ docs/agent-guides/
   spec-workflow.md
   generate-pr-description.md
   commit-message-standard.md
+  local-dev-docker-stack.md
+  graphql-api-workflow.md
+  database-transaction-safety.md
+  cache-performance-workflow.md
+  observability-debugging.md
+  testing-load-testing.md
 ```
 
 Esses arquivos podem ser usados por Cursor, Claude Code ou qualquer outro agente.
@@ -65,7 +71,9 @@ docs/agent-adapters/
   README.md
   templates/
     claude/
+    copilot/
     cursor/
+    gemini/
 ```
 
 Gerar adaptadores locais:
@@ -79,9 +87,18 @@ Gerar por IDE:
 ```bash
 scripts/setup-agent-adapters.sh cursor
 scripts/setup-agent-adapters.sh claude
+scripts/setup-agent-adapters.sh copilot
+scripts/setup-agent-adapters.sh vscode
+scripts/setup-agent-adapters.sh gemini
 ```
 
-Arquivos gerados são locais e ignorados pelo Git.
+Arquivos gerados são locais, por ambiente e ignorados pelo Git.
+
+Regra:
+
+- não versionar adapter específico de IDE como fonte de verdade;
+- não depender de Cursor, Claude Code, VS Code/Copilot ou Gemini;
+- versionar apenas guias agnósticos e templates de adapter.
 
 ## Índice de Specs
 
@@ -170,6 +187,18 @@ Skills/adaptadores criados:
     SKILL.md
   commit-message-standard/
     SKILL.md
+  local-dev-docker-stack/
+    SKILL.md
+  graphql-api-workflow/
+    SKILL.md
+  database-transaction-safety/
+    SKILL.md
+  cache-performance-workflow/
+    SKILL.md
+  observability-debugging/
+    SKILL.md
+  testing-load-testing/
+    SKILL.md
 ```
 
 Esses arquivos devem ser curtos e apontar para os guias agnósticos em `docs/agent-guides`.
@@ -208,6 +237,48 @@ Eles são gerados a partir de:
 docs/agent-adapters/templates/claude/
 ```
 
+## Adaptadores do GitHub Copilot
+
+Arquivo específico para GitHub Copilot:
+
+```txt
+.github/copilot-instructions.md
+```
+
+Objetivo:
+
+- permitir que Copilot descubra o fluxo do projeto;
+- apontar para `AGENTS.md`;
+- apontar para `docs/agent-guides`;
+- evitar duplicação dos guias agnósticos.
+
+Ele é gerado a partir de:
+
+```txt
+docs/agent-adapters/templates/copilot/
+```
+
+## Adaptadores do Gemini CLI
+
+Arquivo específico para Gemini CLI:
+
+```txt
+GEMINI.md
+```
+
+Objetivo:
+
+- permitir que Gemini CLI carregue contexto persistente do projeto;
+- apontar para `AGENTS.md`;
+- apontar para `docs/agent-guides`;
+- evitar duplicação dos guias agnósticos.
+
+Ele é gerado a partir de:
+
+```txt
+docs/agent-adapters/templates/gemini/
+```
+
 ## Agentes Sem Skills Formais
 
 Nem toda IDE/agente usa o conceito de skill como o Cursor.
@@ -231,6 +302,12 @@ CLAUDE.md
     -> docs/agent-guides/mcp-docs-gate.md
     -> docs/agent-guides/commit-message-standard.md
     -> docs/agent-guides/generate-pr-description.md
+    -> docs/agent-guides/local-dev-docker-stack.md
+    -> docs/agent-guides/graphql-api-workflow.md
+    -> docs/agent-guides/database-transaction-safety.md
+    -> docs/agent-guides/cache-performance-workflow.md
+    -> docs/agent-guides/observability-debugging.md
+    -> docs/agent-guides/testing-load-testing.md
 ```
 
 Critério:
@@ -406,6 +483,151 @@ Regra:
 - Preferir um commit por spec concluída ou etapa funcional finalizada.
 - Antes de commitar código, seguir `docs/agent-guides/code-quality-gate.md`.
 
+## Skill `local-dev-docker-stack`
+
+Objetivo:
+
+- Padronizar como agentes sobem e validam a stack local.
+- Evitar workarounds Docker desnecessários quando `buildx` está funcionando.
+- Guiar depuração de API, Postgres, Redis, Grafana, Tempo, Loki, Alloy e Collector.
+
+Usar quando a tarefa envolver:
+
+- Docker;
+- Docker Compose;
+- build da API;
+- health check;
+- containers de observabilidade;
+- problemas de ambiente local.
+
+Regra:
+
+- Seguir `docs/agent-guides/local-dev-docker-stack.md`.
+- Não ler ou expor `.env`.
+- Validar com `docker compose config`, `docker ps` e health GraphQL quando aplicável.
+
+## Skill `graphql-api-workflow`
+
+Objetivo:
+
+- Padronizar alterações no contrato GraphQL.
+- Manter resolvers finos.
+- Evitar regra de negócio em `presentation`.
+
+Usar quando a tarefa envolver:
+
+- resolvers;
+- inputs;
+- types;
+- mappers;
+- queries;
+- mutations;
+- paginação GraphQL.
+
+Regra:
+
+- Seguir `docs/agent-guides/graphql-api-workflow.md`.
+- Resolver deve chamar use case.
+- Contrato público deve respeitar `docs/specs/foundation/04-api-graphql.md`.
+
+## Skill `database-transaction-safety`
+
+Objetivo:
+
+- Proteger consistência de pedidos, estoque e idempotência.
+- Reforçar PostgreSQL como fonte da verdade.
+- Evitar perda ou duplicidade de pedidos.
+
+Usar quando a tarefa envolver:
+
+- PostgreSQL;
+- Kysely;
+- migrations;
+- repositórios;
+- estoque;
+- criação de pedido;
+- idempotência;
+- concorrência.
+
+Regra:
+
+- Seguir `docs/agent-guides/database-transaction-safety.md`.
+- Redis não participa do caminho crítico de escrita.
+- Transação de pedido deve manter atualização de estoque atômica.
+
+## Skill `cache-performance-workflow`
+
+Objetivo:
+
+- Padronizar uso de Redis para leitura.
+- Evitar cache no caminho crítico.
+- Manter logs/spans de hit, miss, set e invalidate.
+
+Usar quando a tarefa envolver:
+
+- cache;
+- Redis;
+- paginação;
+- listagens;
+- performance;
+- invalidação.
+
+Regra:
+
+- Seguir `docs/agent-guides/cache-performance-workflow.md`.
+- Não usar cache para validar estoque.
+- Sempre revisar invalidação ao alterar escrita relacionada a produtos.
+
+## Skill `observability-debugging`
+
+Objetivo:
+
+- Padronizar logs estruturados e traces.
+- Guiar depuração com Grafana, Tempo e Loki.
+- Evitar logs inúteis ou sensíveis.
+
+Usar quando a tarefa envolver:
+
+- OpenTelemetry;
+- logs JSON;
+- spans;
+- Grafana;
+- Tempo;
+- Loki;
+- Alloy;
+- Collector;
+- investigação de erro.
+
+Regra:
+
+- Seguir `docs/agent-guides/observability-debugging.md`.
+- Não logar `.env`, tokens, senhas ou payload completo sensível.
+- Validar traces e logs quando a stack local estiver disponível.
+
+## Skill `testing-load-testing`
+
+Objetivo:
+
+- Padronizar criação e execução de testes.
+- Guiar escolha entre unitário, integração, e2e e carga.
+- Reforçar testes de concorrência quando mexer em estoque/transação.
+
+Usar quando a tarefa envolver:
+
+- Jest;
+- e2e;
+- mocks;
+- concorrência;
+- k6;
+- fixtures;
+- validação antes de entrega.
+
+Regra:
+
+- Seguir `docs/agent-guides/testing-load-testing.md`.
+- Usar mocks em unitários.
+- Rodar `npm run quality:check` e `npm run build` antes de finalizar código.
+
 ## Relação Entre Specs e Skills
 
 Specs definem decisões do projeto.
@@ -489,8 +711,10 @@ Evitar criar guia/skill quando:
 - Criar `AGENTS.md` como entry point universal.
 - Versionar templates de adaptadores em `docs/agent-adapters`.
 - Gerar `CLAUDE.md`, `.claude/` e `.cursor/` localmente via script.
+- Gerar `.github/copilot-instructions.md` e `GEMINI.md` localmente via script.
 - Ignorar adaptadores gerados no Git.
 - Usar adaptadores específicos de IDE apenas como ponte gerada.
+- Gerar apenas o adapter do ambiente usado pela pessoa, exceto quando o usuário pedir `all`.
 - Usar `.cursor/rules` gerado para regras persistentes do Cursor.
 - Usar `docs/specs/00-index.md` como entrada única das specs.
 - Usar `docs/memory` para notas temporárias.

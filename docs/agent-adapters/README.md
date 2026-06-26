@@ -13,11 +13,19 @@ docs/agent-adapters/templates/
   claude/
     CLAUDE.md
     .claude/
+  copilot/
+    .github/
   cursor/
     .cursor/
+  gemini/
+    GEMINI.md
 ```
 
 ## Geração Local
+
+Gere apenas o adapter do ambiente usado pela pessoa.
+
+Os arquivos gerados não são fonte de verdade do projeto e devem continuar ignorados pelo Git.
 
 Gerar todos os adaptadores:
 
@@ -35,6 +43,24 @@ Gerar apenas Claude Code:
 
 ```bash
 scripts/setup-agent-adapters.sh claude
+```
+
+Gerar apenas GitHub Copilot:
+
+```bash
+scripts/setup-agent-adapters.sh copilot
+```
+
+Gerar para VS Code com GitHub Copilot:
+
+```bash
+scripts/setup-agent-adapters.sh vscode
+```
+
+Gerar apenas Gemini CLI:
+
+```bash
+scripts/setup-agent-adapters.sh gemini
 ```
 
 ## Arquivos Gerados
@@ -62,6 +88,29 @@ Uso:
 - `CLAUDE.md` aponta para `AGENTS.md`.
 - `.claude/README.md` explica como carregar os guias agnósticos.
 - Claude Code não duplica as skills do Cursor.
+
+GitHub Copilot:
+
+```txt
+.github/copilot-instructions.md
+```
+
+Uso:
+
+- arquivo de instruções do Copilot aponta para `AGENTS.md` e `docs/agent-guides/`.
+- não duplica guias longos.
+- deve ser gerado apenas em ambientes que usam VS Code/GitHub Copilot.
+
+Gemini CLI:
+
+```txt
+GEMINI.md
+```
+
+Uso:
+
+- arquivo de contexto do Gemini aponta para `AGENTS.md` e `docs/agent-guides/`.
+- não duplica guias longos.
 
 ## Regra
 

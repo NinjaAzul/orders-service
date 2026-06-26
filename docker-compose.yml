@@ -13,6 +13,7 @@ services:
       OTEL_SERVICE_NAME: order-service
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_TRACES_ENABLED: true
+      LOG_LEVEL: info
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,10 +53,11 @@ services:
     ports:
       - '3001:3000'
     volumes:
-      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/docker/observability/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - tempo
       - loki
+      - alloy
     networks:
       - order-service-network
 
@@ -64,7 +66,7 @@ services:
     container_name: order-service-tempo
     command: ['-config.file=/etc/tempo.yml']
     volumes:
-      - ./observability/tempo.yml:/etc/tempo.yml:ro
+      - ./infra/docker/observability/tempo.yml:/etc/tempo.yml:ro
     networks:
       - order-service-network
 
@@ -75,12 +77,27 @@ services:
     networks:
       - order-service-network
 
+  alloy:
+    image: grafana/alloy:latest
+    container_name: order-service-alloy
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --server.http.listen-addr=0.0.0.0:12345
+    volumes:
+      - ./infra/docker/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - loki
+    networks:
+      - order-service-network
+
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: order-service-otel-collector
     command: ['--config=/etc/otel-collector.yml']
     volumes:
-      - ./observability/otel-collector.yml:/etc/otel-collector.yml:ro
+      - ./infra/docker/observability/otel-collector.yml:/etc/otel-collector.yml:ro
     depends_on:
       - tempo
       - loki

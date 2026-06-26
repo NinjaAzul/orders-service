@@ -156,6 +156,50 @@ Criação de pedido:
 
 Redis não participa do caminho crítico de escrita.
 
+## Observabilidade
+
+Suba a stack:
+
+```bash
+docker compose up --build
+```
+
+Fluxo local:
+
+```txt
+API -> traces OTLP -> OpenTelemetry Collector -> Tempo -> Grafana
+API stdout JSON -> Grafana Alloy -> Loki -> Grafana
+```
+
+No Grafana:
+
+- Acesse `http://localhost:3001`.
+- Use o datasource `Tempo` para buscar traces.
+- Use o datasource `Loki` para buscar logs.
+
+Consultas úteis no Loki:
+
+```logql
+{container_name="order-service-api"} | json
+{container_name="order-service-api"} | json | feature="orders"
+{container_name="order-service-api"} | json | operation="createOrder"
+{container_name="order-service-api"} | json | level="warn"
+```
+
+Spans úteis no Tempo:
+
+- `usecase.create_user`
+- `usecase.create_product`
+- `usecase.list_products`
+- `usecase.create_order`
+- `db.transaction`
+- `db.update_stock`
+- `db.create_order`
+- `db.create_order_items`
+- `redis.get`
+- `redis.set`
+- `redis.invalidate`
+
 ## Testes
 
 ```bash
@@ -171,12 +215,12 @@ npm run quality:check
 
 ## Teste de Carga
 
-Scripts k6 ficam em `load-tests/`.
+Scripts k6 ficam em `test/load/`.
 
 Exemplo:
 
 ```bash
-BASE_URL=http://localhost:3000/graphql k6 run load-tests/scripts/list-products.js
+BASE_URL=http://localhost:3000/graphql k6 run test/load/scripts/list-products.js
 ```
 
 ## Qualidade de Código

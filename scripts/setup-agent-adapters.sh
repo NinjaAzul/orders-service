@@ -29,6 +29,16 @@ setup_claude() {
   echo "Claude adapters generated in CLAUDE.md and .claude/"
 }
 
+setup_copilot() {
+  copy_dir "$TEMPLATES_DIR/copilot/.github" "$ROOT_DIR/.github"
+  echo "GitHub Copilot adapter generated in .github/copilot-instructions.md"
+}
+
+setup_gemini() {
+  cp "$TEMPLATES_DIR/gemini/GEMINI.md" "$ROOT_DIR/GEMINI.md"
+  echo "Gemini adapter generated in GEMINI.md"
+}
+
 case "$TARGET" in
   cursor)
     setup_cursor
@@ -36,12 +46,23 @@ case "$TARGET" in
   claude)
     setup_claude
     ;;
+  copilot)
+    setup_copilot
+    ;;
+  vscode)
+    setup_copilot
+    ;;
+  gemini)
+    setup_gemini
+    ;;
   all)
     setup_cursor
     setup_claude
+    setup_copilot
+    setup_gemini
     ;;
   *)
-    echo "Usage: $0 [cursor|claude|all]" >&2
+    echo "Usage: $0 [cursor|claude|copilot|vscode|gemini|all]" >&2
     exit 1
     ;;
 esac

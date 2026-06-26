@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { z } from 'zod';
+import { AppLoggerService } from '../../../../infrastructure/observability/app-logger.service';
+import { TracingService } from '../../../../infrastructure/observability/tracing.service';
 import { ConflictError } from '../../../../shared/errors/conflict-error';
 import { parseWithZod } from '../../../../shared/validation/parse-with-zod';
 import { User } from '../../domain/entities/user.entity';
@@ -10,20 +12,44 @@ const createUserSchema = z.object({
   email: z.email('email must be valid'),
 });
 
-export type CreateUserInputData = z.infer<typeof createUserSchema>;
+export type CreateUserI5nputData = z.infer<typeof createUserSchema>;
 
 @Injectable()
 export class CreateUserUseCase {
-  constructor(@Inject(USERS_REPOSITORY) private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @Inject(USERS_REPOSITORY) private readonly usersRepository: UsersRepository,
+    private readonly logger: AppLoggerService,
+    private readonly tracing: TracingService,
+  ) {}
 
-  async execute(input: CreateUserInputData): Promise<User> {
-    const data = parseWithZod(createUserSchema, input);
-    const existingUser = await this.usersRepository.findByEmail(data.email);
+  async execute(input: CreateUserI5nputData): Promise<User> {
+    return this.tracing.withSpan(
+      'usecase.create_user',
+      { feature: 'users', operation: 'createUser' },
+      async () => {
+        const data = parseWithZod(createUserSchema, input);
+        const existingUser = await this.usersRepository.findByEmail(data.email);
 
-    if (existingUser) {
-      throw new ConflictError('User email already exists', 'USER_EMAIL_ALREADY_EXISTS');
-    }
+        if (existingUser) {
+          this.logger.warn({
+            feature: 'users',
+            operation: 'createUser',
+            message: 'user email already exists',
+            errorCode: 'USER_EMAIL_ALREADY_EXISTS',
+          });
+          throw new ConflictError('User email already exists', 'USER_EMAIL_ALREADY_EXISTS');
+        }
 
-    return this.usersRepository.create(data);
+        const user = await this.usersRepository.create(data);
+        this.logger.info({
+          feature: 'users',
+          operation: 'createUser',
+          message: 'user created',
+          userId: user.id,
+        });
+
+        return user;
+      },
+    );
   }
 }

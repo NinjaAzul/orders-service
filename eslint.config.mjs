@@ -5,7 +5,7 @@ const typedFiles = ['src/**/*.ts', 'test/**/*.ts'];
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'load-tests/**'],
+    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'test/load/**'],
   },
   {
     files: typedFiles,

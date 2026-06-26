@@ -25,6 +25,12 @@ Quando uma tarefa exigir um padrão do projeto, use o guia agnóstico correspond
 - documentação externa: `docs/agent-guides/mcp-docs-gate.md`
 - commits: `docs/agent-guides/commit-message-standard.md`
 - descrição de PR: `docs/agent-guides/generate-pr-description.md`
+- Docker/local dev: `docs/agent-guides/local-dev-docker-stack.md`
+- GraphQL/API: `docs/agent-guides/graphql-api-workflow.md`
+- banco/transações: `docs/agent-guides/database-transaction-safety.md`
+- cache/performance: `docs/agent-guides/cache-performance-workflow.md`
+- observabilidade/debug: `docs/agent-guides/observability-debugging.md`
+- testes/carga: `docs/agent-guides/testing-load-testing.md`
 
 ## Fluxo
 

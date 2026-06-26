@@ -21,6 +21,12 @@ Use este arquivo em Cursor, Claude Code ou outro agente.
 - Documentação externa: `docs/agent-guides/mcp-docs-gate.md`
 - Commits: `docs/agent-guides/commit-message-standard.md`
 - Descrição de PR: `docs/agent-guides/generate-pr-description.md`
+- Docker/local dev: `docs/agent-guides/local-dev-docker-stack.md`
+- GraphQL/API: `docs/agent-guides/graphql-api-workflow.md`
+- Banco/transações: `docs/agent-guides/database-transaction-safety.md`
+- Cache/performance: `docs/agent-guides/cache-performance-workflow.md`
+- Observabilidade/debug: `docs/agent-guides/observability-debugging.md`
+- Testes/carga: `docs/agent-guides/testing-load-testing.md`
 
 ## Fonte de Verdade
 
@@ -104,7 +110,15 @@ TYPE - descrição curta no imperativo
 
 ## Adaptadores Por IDE
 
-Adaptadores específicos de IDE são gerados localmente e ignorados pelo Git.
+Adaptadores específicos de IDE são gerados localmente por ambiente e ignorados pelo Git.
+
+A fonte de verdade continua sendo:
+
+- `AGENTS.md`
+- `docs/agent-guides/`
+- `docs/specs/00-index.md`
+
+Não prender o projeto a Cursor, Claude Code, VS Code/Copilot ou Gemini.
 
 Gerar todos:
 
@@ -121,5 +135,19 @@ Claude Code:
 
 - `CLAUDE.md`
 - `.claude/README.md`
+
+GitHub Copilot:
+
+- `.github/copilot-instructions.md`
+
+VS Code com GitHub Copilot:
+
+```bash
+scripts/setup-agent-adapters.sh vscode
+```
+
+Gemini CLI:
+
+- `GEMINI.md`
 
 Esses adaptadores devem apontar para os guias agnósticos, não duplicar regras.

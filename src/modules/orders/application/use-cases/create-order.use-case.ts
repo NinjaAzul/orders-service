@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import { CacheService } from '../../../../infrastructure/cache/cache.service';
+import { AppLoggerService } from '../../../../infrastructure/observability/app-logger.service';
+import { TracingService } from '../../../../infrastructure/observability/tracing.service';
 import { NotFoundError } from '../../../../shared/errors/not-found-error';
 import { parseWithZod } from '../../../../shared/validation/parse-with-zod';
 import {
@@ -31,28 +33,73 @@ export class CreateOrderUseCase {
     @Inject(ORDERS_REPOSITORY) private readonly ordersRepository: OrdersRepository,
     @Inject(USERS_REPOSITORY) private readonly usersRepository: UsersRepository,
     private readonly cacheService: CacheService,
+    private readonly logger: AppLoggerService,
+    private readonly tracing: TracingService,
   ) {}
 
   async execute(input: CreateOrderInputData): Promise<Order> {
-    const data = parseWithZod(createOrderSchema, input);
+    return this.tracing.withSpan(
+      'usecase.create_order',
+      { feature: 'orders', operation: 'createOrder' },
+      async () => {
+        const data = parseWithZod(createOrderSchema, input);
 
-    if (data.idempotencyKey) {
-      const existingOrder = await this.ordersRepository.findByIdempotencyKey(data.idempotencyKey);
+        this.logger.info({
+          feature: 'orders',
+          operation: 'createOrder',
+          message: 'order creation started',
+          userId: data.userId,
+          itemsCount: data.items.length,
+          hasIdempotencyKey: Boolean(data.idempotencyKey),
+        });
 
-      if (existingOrder) {
-        return existingOrder;
-      }
-    }
+        if (data.idempotencyKey) {
+          const existingOrder = await this.ordersRepository.findByIdempotencyKey(
+            data.idempotencyKey,
+          );
 
-    const user = await this.usersRepository.findById(data.userId);
+          if (existingOrder) {
+            this.logger.info({
+              feature: 'orders',
+              operation: 'createOrder',
+              message: 'idempotency key reused',
+              orderId: existingOrder.id,
+              userId: existingOrder.userId,
+            });
 
-    if (!user) {
-      throw new NotFoundError('User not found', 'USER_NOT_FOUND');
-    }
+            return existingOrder;
+          }
+        }
 
-    const order = await this.ordersRepository.createConfirmed(data);
-    await this.cacheService.invalidateProducts();
+        const user = await this.usersRepository.findById(data.userId);
 
-    return order;
+        if (!user) {
+          this.logger.warn({
+            feature: 'orders',
+            operation: 'createOrder',
+            message: 'order rejected by missing user',
+            errorCode: 'USER_NOT_FOUND',
+            userId: data.userId,
+          });
+          throw new NotFoundError('User not found', 'USER_NOT_FOUND');
+        }
+
+        const order = await this.ordersRepository.createConfirmed(data);
+        await this.cacheService.invalidateProducts();
+
+        this.logger.info({
+          feature: 'orders',
+          operation: 'createOrder',
+          message: 'order confirmed',
+          orderId: order.id,
+          userId: order.userId,
+          itemsCount: order.items.length,
+          total: order.total,
+          status: order.status,
+        });
+
+        return order;
+      },
+    );
   }
 }

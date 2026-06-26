@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Kysely, sql } from 'kysely';
 import { DATABASE } from '../../../../infrastructure/database/database.provider';
 import { Database } from '../../../../infrastructure/database/database.types';
+import { AppLoggerService } from '../../../../infrastructure/observability/app-logger.service';
+import { TracingService } from '../../../../infrastructure/observability/tracing.service';
 import { ConflictError } from '../../../../shared/errors/conflict-error';
 import { NotFoundError } from '../../../../shared/errors/not-found-error';
 import { Product } from '../../../products/domain/entities/product.entity';
@@ -22,7 +24,11 @@ interface ProductSnapshot {
 
 @Injectable()
 export class KyselyOrdersRepository implements OrdersRepository {
-  constructor(@Inject(DATABASE) private readonly db: Kysely<Database>) {}
+  constructor(
+    @Inject(DATABASE) private readonly db: Kysely<Database>,
+    private readonly logger: AppLoggerService,
+    private readonly tracing: TracingService,
+  ) {}
 
   async findById(id: number): Promise<Order | null> {
     const order = await this.db
@@ -94,82 +100,173 @@ export class KyselyOrdersRepository implements OrdersRepository {
   }
 
   async findByIdempotencyKey(idempotencyKey: string): Promise<Order | null> {
-    const order = await this.db
-      .selectFrom('orders')
-      .select(['id'])
-      .where('idempotency_key', '=', idempotencyKey)
-      .executeTakeFirst();
+    const order = await this.tracing.withSpan(
+      'repository.find_order_by_idempotency_key',
+      { feature: 'orders', operation: 'findByIdempotencyKey' },
+      async () =>
+        this.db
+          .selectFrom('orders')
+          .select(['id'])
+          .where('idempotency_key', '=', idempotencyKey)
+          .executeTakeFirst(),
+    );
 
     return order ? this.findById(order.id) : null;
   }
 
   async createConfirmed(data: CreateConfirmedOrderData): Promise<Order> {
-    const orderId = await this.db.transaction().execute(async (trx) => {
-      const productSnapshots: ProductSnapshot[] = [];
-      let total = 0;
+    const orderId = await this.tracing.withSpan(
+      'db.transaction',
+      {
+        feature: 'orders',
+        operation: 'createConfirmedOrder',
+        'db.system': 'postgresql',
+        'db.transaction.status': 'started',
+        'items.count': data.items.length,
+      },
+      async () =>
+        this.db.transaction().execute(async (trx) => {
+          const productSnapshots: ProductSnapshot[] = [];
+          let total = 0;
 
-      for (const item of data.items) {
-        const product = await trx
-          .selectFrom('products')
-          .selectAll()
-          .where('id', '=', item.productId)
-          .executeTakeFirst();
+          this.logger.info({
+            feature: 'orders',
+            operation: 'createConfirmedOrder',
+            message: 'database transaction started',
+            userId: data.userId,
+            itemsCount: data.items.length,
+          });
 
-        if (!product) {
-          throw new NotFoundError('Product not found', 'PRODUCT_NOT_FOUND');
-        }
+          for (const item of data.items) {
+            const product = await this.tracing.withSpan(
+              'repository.find_product_for_order',
+              { feature: 'orders', operation: 'findProductForOrder', productId: item.productId },
+              async () =>
+                trx
+                  .selectFrom('products')
+                  .selectAll()
+                  .where('id', '=', item.productId)
+                  .executeTakeFirst(),
+            );
 
-        const updatedProduct = await trx
-          .updateTable('products')
-          .set({
-            stock: sql<number>`stock - ${item.quantity}`,
-          })
-          .where('id', '=', item.productId)
-          .where('stock', '>=', item.quantity)
-          .returning(['id'])
-          .executeTakeFirst();
+            if (!product) {
+              this.logger.warn({
+                feature: 'orders',
+                operation: 'createConfirmedOrder',
+                message: 'order rejected by missing product',
+                errorCode: 'PRODUCT_NOT_FOUND',
+                productId: item.productId,
+              });
+              throw new NotFoundError('Product not found', 'PRODUCT_NOT_FOUND');
+            }
 
-        if (!updatedProduct) {
-          throw new ConflictError('Insufficient stock', 'INSUFFICIENT_STOCK');
-        }
+            const updatedProduct = await this.tracing.withSpan(
+              'db.update_stock',
+              {
+                feature: 'orders',
+                operation: 'updateStock',
+                'db.system': 'postgresql',
+                'db.table': 'products',
+                productId: item.productId,
+                quantity: item.quantity,
+              },
+              async () =>
+                trx
+                  .updateTable('products')
+                  .set({
+                    stock: sql<number>`stock - ${item.quantity}`,
+                  })
+                  .where('id', '=', item.productId)
+                  .where('stock', '>=', item.quantity)
+                  .returning(['id'])
+                  .executeTakeFirst(),
+            );
 
-        const price = Number(product.price);
-        total += price * item.quantity;
-        productSnapshots.push({
-          id: product.id,
-          name: product.name,
-          price,
-          stock: product.stock,
-          createdAt: product.created_at,
-          quantity: item.quantity,
-        });
-      }
+            if (!updatedProduct) {
+              this.logger.warn({
+                feature: 'orders',
+                operation: 'createConfirmedOrder',
+                message: 'order rejected by insufficient stock',
+                errorCode: 'INSUFFICIENT_STOCK',
+                productId: item.productId,
+                quantity: item.quantity,
+              });
+              throw new ConflictError('Insufficient stock', 'INSUFFICIENT_STOCK');
+            }
 
-      const order = await trx
-        .insertInto('orders')
-        .values({
-          user_id: data.userId,
-          status: 'CONFIRMED',
-          total,
-          idempotency_key: data.idempotencyKey ?? null,
-        })
-        .returning(['id'])
-        .executeTakeFirstOrThrow();
+            const price = Number(product.price);
+            total += price * item.quantity;
+            productSnapshots.push({
+              id: product.id,
+              name: product.name,
+              price,
+              stock: product.stock,
+              createdAt: product.created_at,
+              quantity: item.quantity,
+            });
+          }
 
-      for (const product of productSnapshots) {
-        await trx
-          .insertInto('order_items')
-          .values({
-            order_id: order.id,
-            product_id: product.id,
-            quantity: product.quantity,
-            price: product.price,
-          })
-          .execute();
-      }
+          const order = await this.tracing.withSpan(
+            'db.create_order',
+            {
+              feature: 'orders',
+              operation: 'createOrderRow',
+              'db.system': 'postgresql',
+              'db.table': 'orders',
+              userId: data.userId,
+              total,
+            },
+            async () =>
+              trx
+                .insertInto('orders')
+                .values({
+                  user_id: data.userId,
+                  status: 'CONFIRMED',
+                  total,
+                  idempotency_key: data.idempotencyKey ?? null,
+                })
+                .returning(['id'])
+                .executeTakeFirstOrThrow(),
+          );
 
-      return order.id;
-    });
+          for (const product of productSnapshots) {
+            await this.tracing.withSpan(
+              'db.create_order_items',
+              {
+                feature: 'orders',
+                operation: 'createOrderItemRow',
+                'db.system': 'postgresql',
+                'db.table': 'order_items',
+                orderId: order.id,
+                productId: product.id,
+                quantity: product.quantity,
+              },
+              async () => {
+                await trx
+                  .insertInto('order_items')
+                  .values({
+                    order_id: order.id,
+                    product_id: product.id,
+                    quantity: product.quantity,
+                    price: product.price,
+                  })
+                  .execute();
+              },
+            );
+          }
+
+          this.logger.info({
+            feature: 'orders',
+            operation: 'createConfirmedOrder',
+            message: 'database transaction committed',
+            orderId: order.id,
+            userId: data.userId,
+            total,
+          });
+
+          return order.id;
+        }),
+    );
 
     const order = await this.findById(orderId);
 

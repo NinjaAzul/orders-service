@@ -243,13 +243,13 @@ Referenciar a spec:
 Comando esperado:
 
 ```bash
-k6 run load-tests/scripts/list-products.js
+k6 run test/load/scripts/list-products.js
 ```
 
 Pontos a citar:
 
 - k6 como ferramenta de carga;
-- scripts versionados em `load-tests`;
+- scripts versionados em `test/load`;
 - cenários de leitura, escrita e concorrência;
 - métricas p95, p99, taxa de erro e throughput;
 - thresholds iniciais para entender limites do MVP.

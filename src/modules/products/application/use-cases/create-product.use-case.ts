@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import { CacheService } from '../../../../infrastructure/cache/cache.service';
+import { AppLoggerService } from '../../../../infrastructure/observability/app-logger.service';
+import { TracingService } from '../../../../infrastructure/observability/tracing.service';
 import { parseWithZod } from '../../../../shared/validation/parse-with-zod';
 import { Product } from '../../domain/entities/product.entity';
 import {
@@ -21,13 +23,29 @@ export class CreateProductUseCase {
   constructor(
     @Inject(PRODUCTS_REPOSITORY) private readonly productsRepository: ProductsRepository,
     private readonly cacheService: CacheService,
+    private readonly logger: AppLoggerService,
+    private readonly tracing: TracingService,
   ) {}
 
   async execute(input: CreateProductInputData): Promise<Product> {
-    const data = parseWithZod(createProductSchema, input);
-    const product = await this.productsRepository.create(data);
-    await this.cacheService.invalidateProducts();
+    return this.tracing.withSpan(
+      'usecase.create_product',
+      { feature: 'products', operation: 'createProduct' },
+      async () => {
+        const data = parseWithZod(createProductSchema, input);
+        const product = await this.productsRepository.create(data);
+        await this.cacheService.invalidateProducts();
 
-    return product;
+        this.logger.info({
+          feature: 'products',
+          operation: 'createProduct',
+          message: 'product created',
+          productId: product.id,
+          stock: product.stock,
+        });
+
+        return product;
+      },
+    );
   }
 }

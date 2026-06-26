@@ -64,6 +64,8 @@ Thumbs.db
 CLAUDE.md
 .claude/
 .cursor/
+GEMINI.md
+.github/copilot-instructions.md
 
 # Agent guidance intentionally versioned
 !AGENTS.md
@@ -74,7 +76,7 @@ CLAUDE.md
 !scripts/setup-agent-adapters.sh
 
 # Local generated artifacts
-load-tests/results/
+test/load/results/
 k6-results/
 
 # Secrets and credentials

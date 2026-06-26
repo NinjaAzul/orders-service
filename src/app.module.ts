@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AppConfigModule } from './infrastructure/config/app-config.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
+import { ObservabilityModule } from './infrastructure/observability/observability.module';
 import { HealthModule } from './modules/health/health.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductsModule } from './modules/products/products.module';
@@ -15,6 +16,7 @@ import { mapGraphqlError } from './shared/errors/graphql-error.mapper';
     AppConfigModule,
     DatabaseModule,
     CacheModule,
+    ObservabilityModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,

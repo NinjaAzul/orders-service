@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { z } from 'zod';
+import { AppLoggerService } from '../../../../infrastructure/observability/app-logger.service';
+import { TracingService } from '../../../../infrastructure/observability/tracing.service';
 import { PageInfo } from '../../../../shared/graphql/pagination.types';
 import { parseWithZod } from '../../../../shared/validation/parse-with-zod';
 import { User } from '../../domain/entities/user.entity';
@@ -17,22 +19,41 @@ export interface ListUsersResult {
 
 @Injectable()
 export class ListUsersUseCase {
-  constructor(@Inject(USERS_REPOSITORY) private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @Inject(USERS_REPOSITORY) private readonly usersRepository: UsersRepository,
+    private readonly logger: AppLoggerService,
+    private readonly tracing: TracingService,
+  ) {}
 
   async execute(input: unknown): Promise<ListUsersResult> {
-    const pagination = parseWithZod(paginationSchema, input);
-    const [data, total] = await Promise.all([
-      this.usersRepository.list(pagination),
-      this.usersRepository.count(),
-    ]);
+    return this.tracing.withSpan(
+      'usecase.list_users',
+      { feature: 'users', operation: 'users' },
+      async () => {
+        const pagination = parseWithZod(paginationSchema, input);
+        const [data, total] = await Promise.all([
+          this.usersRepository.list(pagination),
+          this.usersRepository.count(),
+        ]);
 
-    return {
-      data,
-      pageInfo: {
-        limit: pagination.limit,
-        offset: pagination.offset,
-        total,
+        this.logger.info({
+          feature: 'users',
+          operation: 'users',
+          message: 'users listed',
+          limit: pagination.limit,
+          offset: pagination.offset,
+          total,
+        });
+
+        return {
+          data,
+          pageInfo: {
+            limit: pagination.limit,
+            offset: pagination.offset,
+            total,
+          },
+        };
       },
-    };
+    );
   }
 }

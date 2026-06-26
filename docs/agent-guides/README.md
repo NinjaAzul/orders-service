@@ -14,6 +14,12 @@ Use estes arquivos em Cursor, Claude Code ou outra ferramenta.
 - `code-quality-gate.md`: validações de qualidade antes de finalizar código.
 - `generate-pr-description.md`: como gerar descrição enxuta de PR a partir de branch, Jira e commits.
 - `commit-message-standard.md`: padrão de mensagens de commit com ticket opcional, tipo e descrição curta.
+- `local-dev-docker-stack.md`: como subir, validar e depurar a stack local Docker.
+- `graphql-api-workflow.md`: como alterar resolvers, inputs, types e contrato GraphQL.
+- `database-transaction-safety.md`: como alterar banco, Kysely, pedidos, estoque e idempotência com segurança.
+- `cache-performance-workflow.md`: como mexer em Redis, cache, paginação e performance.
+- `observability-debugging.md`: como validar logs JSON, traces, Tempo, Loki, Alloy e Collector.
+- `testing-load-testing.md`: como criar e rodar testes Jest, e2e e k6.
 
 ## Entry Points
 
