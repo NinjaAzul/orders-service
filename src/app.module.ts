@@ -1,4 +1,5 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppConfigModule } from './infrastructure/config/app-config.module';
@@ -21,6 +22,10 @@ import { mapGraphqlError } from './shared/errors/graphql-error.mapper';
       driver: ApolloDriver,
       autoSchemaFile: true,
       playground: false,
+      plugins:
+        process.env.NODE_ENV === 'production'
+          ? []
+          : [ApolloServerPluginLandingPageLocalDefault({ footer: false })],
       formatError: mapGraphqlError,
     }),
     HealthModule,

@@ -1,3 +1,4 @@
+import { trace } from '@opentelemetry/api';
 import { Injectable } from '@nestjs/common';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -27,11 +28,15 @@ export class AppLoggerService {
       return;
     }
 
+    const activeSpanContext = trace.getActiveSpan()?.spanContext();
+
     process.stdout.write(
       `${JSON.stringify({
         timestamp: new Date().toISOString(),
         level,
         service: process.env.OTEL_SERVICE_NAME ?? 'order-service',
+        traceId: activeSpanContext?.traceId,
+        spanId: activeSpanContext?.spanId,
         ...fields,
       })}\n`,
     );

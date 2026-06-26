@@ -2,6 +2,7 @@ import { AppLoggerService } from '../../../src/infrastructure/observability/app-
 import { TracingService } from '../../../src/infrastructure/observability/tracing.service';
 import { ConflictError } from '../../../src/shared/errors/conflict-error';
 import { CreateUserUseCase } from '../../../src/modules/users/application/use-cases/create-user.use-case';
+import { ListUsersUseCase } from '../../../src/modules/users/application/use-cases/list-users.use-case';
 import { User } from '../../../src/modules/users/domain/entities/user.entity';
 import { UsersRepository } from '../../../src/modules/users/domain/repositories/users.repository';
 
@@ -53,5 +54,27 @@ describe('CreateUserUseCase', () => {
     await expect(
       useCase.execute({ name: 'Erick', email: 'erick@example.com' }),
     ).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it('lists users with pagination metadata', async () => {
+    const repository: UsersRepository = {
+      create: jest.fn(),
+      findByEmail: jest.fn(),
+      findById: jest.fn(),
+      list: jest.fn().mockResolvedValue([createdUser]),
+      count: jest.fn().mockResolvedValue(1),
+    };
+    const useCase = new ListUsersUseCase(repository, logger, tracing);
+
+    await expect(useCase.execute({ limit: 10, offset: 0 })).resolves.toEqual({
+      data: [createdUser],
+      pageInfo: {
+        limit: 10,
+        offset: 0,
+        total: 1,
+      },
+    });
+    expect(repository.list).toHaveBeenCalledWith({ limit: 10, offset: 0 });
+    expect(repository.count).toHaveBeenCalledTimes(1);
   });
 });

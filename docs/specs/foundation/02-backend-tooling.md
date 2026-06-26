@@ -307,38 +307,52 @@ src/
       validation-error.ts
       not-found-error.ts
       conflict-error.ts
-    logging/
-      logger.module.ts
-      request-context.ts
+      graphql-error.mapper.ts
+    graphql/
+      pagination.types.ts
     validation/
-      zod-validation.pipe.ts
+      parse-with-zod.ts
 
   infrastructure/
     config/
-      config.module.ts
+      app-config.module.ts
       env.schema.ts
     database/
       database.module.ts
       database.provider.ts
       database.types.ts
+      migrate.ts
       migrations/
+        001_initial_schema.sql
     cache/
       cache.module.ts
       redis.provider.ts
+      cache.service.ts
     observability/
       observability.module.ts
       tracing.ts
-      telemetry.provider.ts
+      tracing.service.ts
+      app-logger.service.ts
 
   modules/
+    health/
+      health.module.ts
+      health.resolver.ts
+
     users/
+      users.module.ts
       domain/
         entities/
+          user.entity.ts
         repositories/
+          users.repository.ts
       application/
         use-cases/
+          create-user.use-case.ts
+          list-users.use-case.ts
       infrastructure/
         repositories/
+          kysely-users.repository.ts
       presentation/
         graphql/
           users.resolver.ts
@@ -346,32 +360,47 @@ src/
           users.types.ts
 
     products/
+      products.module.ts
       domain/
         entities/
+          product.entity.ts
         repositories/
+          products.repository.ts
       application/
         use-cases/
+          create-product.use-case.ts
+          find-product.use-case.ts
+          list-products.use-case.ts
       infrastructure/
         repositories/
+          kysely-products.repository.ts
       presentation/
         graphql/
           products.resolver.ts
           products.inputs.ts
           products.types.ts
+          products.mapper.ts
 
     orders/
+      orders.module.ts
       domain/
         entities/
+          order.entity.ts
         repositories/
+          orders.repository.ts
       application/
         use-cases/
+          create-order.use-case.ts
+          find-order.use-case.ts
       infrastructure/
         repositories/
+          kysely-orders.repository.ts
       presentation/
         graphql/
           orders.resolver.ts
           orders.inputs.ts
           orders.types.ts
+          orders.mapper.ts
 ```
 
 ## Responsabilidade das Camadas
@@ -439,22 +468,31 @@ Estrutura prevista:
 
 ```txt
 test/
+  jest-e2e.json
   unit/
     users/
-    products/
+      create-user.use-case.spec.ts
     orders/
-  integration/
-    database/
-    repositories/
+      create-order.use-case.spec.ts
   e2e/
-    graphql/
+    health.e2e-spec.ts
+  load/
+    README.md
+    fixtures/
+      users.json
+      products.json
+    scripts/
+      concurrent-orders.js
+      create-order.js
+      list-products.js
 ```
 
 Prioridade dos testes no MVP:
 
 - Unit tests para use cases.
-- Integration tests para repositórios e transações.
+- Integration tests para repositórios e transações quando o risco justificar.
 - E2E tests para mutations e queries principais.
+- Load tests para fluxo de produtos e pedidos concorrentes.
 
 ## Decisões
 

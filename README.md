@@ -31,6 +31,24 @@ Referência: `docs/specs/foundation/01-system-design.md`.
 
 ## Como Executar
 
+### Docker completo
+
+Use este fluxo como padrão para subir a aplicação e a infraestrutura:
+
+```bash
+docker compose up -d --build
+```
+
+Em uma primeira execução com banco vazio, aplique as migrations após o PostgreSQL ficar saudável:
+
+```bash
+npm run migrate
+```
+
+### Desenvolvimento local
+
+Use este fluxo quando quiser rodar a API localmente com Node.js e manter apenas a infraestrutura no Docker.
+
 Use Node.js 22:
 
 ```bash
@@ -61,17 +79,13 @@ Rode a API:
 npm run start:dev
 ```
 
-Ou rode tudo via Docker:
-
-```bash
-docker compose up --build
-```
-
 GraphQL:
 
 ```txt
 http://localhost:3000/graphql
 ```
+
+Em ambiente de desenvolvimento, essa URL abre a Apollo Sandbox para testar queries e mutations no navegador.
 
 Grafana:
 
@@ -79,20 +93,52 @@ Grafana:
 http://localhost:3001
 ```
 
+Credenciais padrão do Grafana local:
+
+```txt
+usuário: admin
+senha: admin
+```
+
+No primeiro acesso, o Grafana pode solicitar a troca da senha.
+
 ## Variáveis de Ambiente
 
 Use `.env.example` como referência. Valores reais não devem ser versionados.
 
-Principais variáveis:
+O arquivo `.env` contém apenas variáveis consumidas pela aplicação:
 
-- `PORT`
+- `NODE_ENV`
 - `DATABASE_URL`
+- `PORT`
 - `REDIS_HOST`
 - `REDIS_PORT`
 - `OTEL_SERVICE_NAME`
 - `OTEL_EXPORTER_OTLP_ENDPOINT`
 - `OTEL_TRACES_ENABLED`
 - `LOG_LEVEL`
+
+### Docker Compose
+
+Quando a API roda via Docker Compose, o serviço `api` recebe o `.env` por `env_file`.
+
+Nesse modo, use nomes dos serviços Docker nos hosts:
+
+```env
+DATABASE_URL=postgres://postgres:postgres@postgres:5432/order_service
+REDIS_HOST=redis
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+```
+
+### Variáveis Fora Do Docker
+
+Quando a API roda fora do container com `npm run start:dev`, ajuste os hosts para `localhost`:
+
+```env
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/order_service
+REDIS_HOST=localhost
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+```
 
 ## API GraphQL
 
